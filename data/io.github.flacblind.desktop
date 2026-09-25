@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=flacblind
+GenericName=Blind ABX Listening Test
+Comment=Find out whether you can really hear the difference between lossless and lossy audio
+Exec=flacblind
+Icon=audio-headphones
+Terminal=false
+Categories=AudioVideo;Audio;Player;Qt;
+Keywords=flac;mp3;abx;lossless;loudness;
+StartupNotify=true
+StartupWMClass=flacblind

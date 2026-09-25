@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flacblind"
+version = "2.0.0"
+description = "Blind ABX listening test for lossless vs. lossy audio, with a PyQt6 GUI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["audio", "abx", "flac", "mp3", "loudness", "ebur128", "qt", "pyqt6"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: MacOS X",
+    "Environment :: Win32 (MS Windows)",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Players",
+]
+# Only one Qt binding is required; the code targets their common subset and
+# falls back from PyQt6 to PySide6 automatically (see flacblind/ui/qtcompat.py).
+dependencies = ["PyQt6>=6.5"]
+
+[project.optional-dependencies]
+pyside6 = ["PySide6>=6.5"]
+# Sample-accurate A/B switching straight from memory (PortAudio).
+sound = ["numpy>=1.24", "sounddevice>=0.4.6"]
+# Faster waveform extraction (a pure-stdlib fallback exists).
+fast = ["numpy>=1.24"]
+dev = ["numpy>=1.24", "sounddevice>=0.4.6", "ruff>=0.5", "mypy>=1.8"]
+
+[project.urls]
+Homepage = "https://github.com/pirkov/flacblind"
+Source = "https://github.com/pirkov/flacblind"
+
+[project.scripts]
+flacblind = "flacblind.app:main"
+
+[project.gui-scripts]
+flacblind-gui = "flacblind.app:main"
+
+[tool.setuptools]
+packages = ["flacblind", "flacblind.core", "flacblind.ui"]
+
+[tool.setuptools.package-data]
+flacblind = ["py.typed"]
+
+[tool.setuptools.data-files]
+"share/applications" = ["data/io.github.flacblind.desktop"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+exclude = [".git", "build", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF", "ARG", "PL"]
+ignore = [
+    "E501",    # long lines are mostly URLs/strings; the formatter handles them
+    "SIM108",  # ternary is not always clearer
+    "PLR0912", # branch count: the GUI builder methods are long but linear
+    "PLR0913", # a few constructors genuinely take many options
+    "PLR0915",
+    "N802",    # Qt naming (setText, paintEvent, …) must stay
+    "N803",
+    "N806",
+    "N815",
+    "RUF012",  # Qt class attributes are fine without ClassVar annotations
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG002", "SLF001", "PLC0415"]
+"tools/*" = ["PLC0415", "T201"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = ["^tests/", "^tools/"]
